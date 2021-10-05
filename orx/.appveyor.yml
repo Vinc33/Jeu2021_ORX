@@ -1,0 +1,73 @@
+version: 1.12-dev.{build}
+
+image:
+- Visual Studio 2017
+- Visual Studio 2019
+
+configuration: Default
+
+platform: x64
+
+environment:
+  matrix:
+  - Version: 32
+  - Version: 64
+
+install:
+- cmd: setup ../cache
+
+cache: ../cache
+
+build_script:
+- cmd: >-
+    if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" set VSVersion=2017
+
+    if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2019" set VSVersion=2019
+
+    set PackageVersion=vs%VSVersion%-%Version%
+
+    set Folder=vs%VSVersion%
+
+    msbuild code/build/windows/%Folder%/orx.sln /p:Platform=%Platform% /p:Configuration=Release
+
+    msbuild code/build/windows/%Folder%/orx.sln /p:Platform=%Platform% /p:Configuration=Profile
+
+    msbuild code/build/windows/%Folder%/orx.sln /p:Platform=%Platform% /p:Configuration=Debug
+
+    msbuild tutorial/build/windows/%Folder%/tutorial.sln /p:Platform=%Platform% /p:Configuration=Release
+
+    set ORX=%CD%\code
+
+    init.bat test +scroll +imgui
+
+    msbuild test/build/windows/%Folder%/test.sln /p:Platform=%Platform% /p:Configuration=Release
+
+    msbuild test/build/windows/%Folder%/test.sln /p:Platform=%Platform% /p:Configuration=Profile
+
+    msbuild test/build/windows/%Folder%/test.sln /p:Platform=%Platform% /p:Configuration=Debug
+
+    msbuild code/build/windows/%Folder%/orx.sln /p:Platform=%Platform% "/p:Configuration=Core Release"
+
+    msbuild tools/orxFontGen/build/windows/%Folder%/orxFontGen.sln /p:Platform=%Platform% /p:Configuration=Release
+
+    msbuild tools/orxCrypt/build/windows/%Folder%/orxCrypt.sln /p:Platform=%Platform% /p:Configuration=Release
+
+    cd code/build/python
+
+    python package.py -p %PackageVersion%
+
+    python package.py -p tuto%PackageVersion%
+
+artifacts:
+- path: code/build/python/packages/*vs2017-64*.zip
+  name: package-vs2017-64
+- path: code/build/python/packages/*vs2017-32*.zip
+  name: package-vs2017-32
+- path: code/build/python/packages/*vs2019-64*.zip
+  name: package-vs2019-64
+- path: code/build/python/packages/*vs2019-32*.zip
+  name: package-vs2019-32
+- path: test/bin/test.exe
+  name: test-project
+
+deploy: off
