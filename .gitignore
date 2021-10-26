@@ -55,7 +55,6 @@ cmake-build-*/
 # IntelliJ
 out/
 
-#ORX ENGINE ignore
 
 
 # mpeltonen/sbt-idea plugin
