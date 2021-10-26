@@ -1,0 +1,24 @@
+syntax: glob
+**/orxBuild.h
+android*/**/*.cxx
+android*/**/*.iml
+android*/**/.external*
+android*/**/.gradle
+android*/**/.idea
+android*/**/app/build
+android*/**/captures
+android*/**/local.properties
+cache
+code/bin
+code/build
+code/demo/**/build
+code/demo/**/libs
+code/demo/**/obj
+code/lib
+extern
+tools/**/bin
+tools/**/build
+tools/**/lib
+tutorial/bin
+tutorial/build
+tutorial/lib
